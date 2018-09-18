@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:decorate xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" template="template.xhtml">
+
+	<h:body>
+		<p:growl id="mensagem" />
+
+		<h:form id="formListagem">
+			<p:panel header="Estados">
+				<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+					value="#{estadoBean.entidades}" var="estado"
+					paginatorPosition="bottom" paginator="true" rows="5">
+
+					<f:facet name="header">
+						<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+							actionListener="#{estadoBean.novo}" update="@form" />
+					</f:facet>
+
+					<p:column headerText="Nome">
+						<h:outputText value="#{estado.est_nome}" />
+					</p:column>
+
+					<p:column headerText="UF">
+						<h:outputText value="#{estado.est_uf}" />
+					</p:column>
+
+					<p:column headerText="Opções">
+						<p:commandButton icon="ui-icon-trash" title="excluir"
+							actionListener="#{estadoBean.deletar(estado)}" update="@form">
+							<p:confirm header="Confirmação"
+								message="Deseja excluir o estado?" icon="ui-icon-alert" />
+							<f:attribute name="e" value="#{estado}" />
+
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-pencil" title="editar"
+							actionListener="#{estadoBean.editar(estado)}"
+							oncomplete="PF('dialogo').show();" update=":formCadastro:painel" />
+					</p:column>
+				</p:dataTable>
+
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+			
+		<p:dialog header="Anexos - Cadastro" widgetVar="dialogo"
+			draggable="true" resizable="false" modal="true" closable="false">
+			<h:form id="formCadastro" enctype="multipart/form-data">
+				<h:panelGrid id="painel" columns="2">
+				
+				
+					<p:outputLabel for="anexo" value="Anexo:" />
+					<p:inputText id="anexo" maxlength="50" size="30"
+						value="#{uploadBean.upload.anx_anexo}" />
+
+					<p:outputLabel for="descricao" value="Descrição:" />
+					<p:inputText id="descricao" maxlength="2" size="10"
+						value="#{estadoBean.upload.anx_descricao}" />
+					
+					<p:outputLabel for="foto" value="Foto:" />	
+					<p:fileUpload id="foto" mode="advanced" fileUploadListener="#{uploadBean.upload}"
+					update=":mensagem" auto="true"/>
+						
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{estadoBean.salvar()}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>	
+			
+
+	</h:body>
+</ui:decorate>
+
